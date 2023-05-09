@@ -1,0 +1,35 @@
+@import '@styles/variables.scss';
+
+.formWrapper {
+    padding: 10px 30px;
+    background-color: white;
+    border-radius: 12px;
+
+    @media(max-width: $mobile-breakpoint) {
+        padding: 6px 10px;
+    }
+}
+
+.formLayout {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    @media(max-width: $mobile-breakpoint) {
+        gap: 0;
+    }
+}
+
+.timeFields {
+    display: flex;
+    flex-grow: 1;
+
+    @media(max-width: $mobile-breakpoint) {
+        flex-direction: column;
+    }
+}
+
+.buttonGroup {
+    padding: 40px 12px;
+    width: auto;
+}
