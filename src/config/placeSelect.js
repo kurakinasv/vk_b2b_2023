@@ -3,11 +3,11 @@ import getNumberOptions from '@utils/getNumberOptions';
 const towers = [
   {
     label: 'А',
-    value: 'a',
+    value: 'A',
   },
   {
     label: 'Б',
-    value: 'b',
+    value: 'Б',
   },
 ];
 
@@ -16,7 +16,7 @@ export const placeSelectData = [
   { name: 'floor', localeName: 'Этаж', options: getNumberOptions(3, 27), searchable: true },
   {
     name: 'room',
-    localeName: 'Переговорочная',
+    localeName: 'Переговорная',
     options: getNumberOptions(1, 10, (i) => `№ ${i}`),
     searchable: true,
   },
