@@ -2,7 +2,7 @@ import { useCallback, useMemo } from 'react';
 import { CustomSelect, FormItem, FormLayoutGroup } from '@vkontakte/vkui';
 
 import { useFormContext } from '@app/context';
-import { placeSelectData, fieldNamesEnum } from '@config/placeSelect';
+import { placeSelectData, fieldNames } from '@config/placeSelect';
 import { formStatusEnum } from '@config/form';
 import useStatus from '@hooks/useStatus';
 import { updateObjectProperty } from '@utils/updateObjectProperty';
@@ -13,14 +13,14 @@ const PlaceSelect = () => {
   const { setFormState, formState, loading } = useFormContext();
 
   const placeSelectProps = useMemo(() => {
-    const foundProps = Object.entries(formState).filter(([key]) => fieldNamesEnum.includes(key));
+    const foundProps = Object.entries(formState).filter(([key]) => fieldNames.includes(key));
     const foundPropsObj = foundProps.reduce((acc, [key, val]) => ({ ...acc, [key]: val }), {});
 
     return foundPropsObj;
   }, [formState]);
 
   const { status, setStatus, changeStatusByFieldValue } = useStatus(
-    Object.values(fieldNamesEnum),
+    Object.values(fieldNames),
     placeSelectProps
   );
 

@@ -11,8 +11,8 @@ export const requiredFields = [
 
 export const defaultFormValue = {
   tower: '',
-  floor: 0,
-  room: 0,
+  floor: '',
+  room: '',
   date: null,
   time_start: {
     hours: '',

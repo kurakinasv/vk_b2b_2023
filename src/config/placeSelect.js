@@ -22,12 +22,4 @@ export const placeSelectData = [
   },
 ];
 
-export const fieldNamesEnum = placeSelectData.map(({ name }) => name);
-
-export const defaultValues = placeSelectData.reduce(
-  (acc, { name, options }) => ({
-    ...acc,
-    [name]: typeof options[0].value === 'string' ? '' : 0,
-  }),
-  {}
-);
+export const fieldNames = placeSelectData.map(({ name }) => name);

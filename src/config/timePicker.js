@@ -5,13 +5,8 @@ export const timePickerSelectData = [
   {
     name: 'minutes',
     localeName: 'Минуты',
-    options: getNumberOptions(0, 59, (i) => (i < 10 ? `0${i}` : i)),
+    options: getNumberOptions(0, 59, (i) => (i < 10 ? `0${i}` : String(i))),
   },
 ];
 
 export const fieldNames = timePickerSelectData.map(({ name }) => name);
-
-export const defaultValues = timePickerSelectData.reduce(
-  (fields, { name }) => ({ ...fields, [name]: '' }),
-  {}
-);
