@@ -10,7 +10,7 @@ import { updateObjectProperty } from '@utils/updateObjectProperty';
 import Subheading from '../Subheading';
 
 const PlaceSelect = () => {
-  const { setFormState, formState } = useFormContext();
+  const { setFormState, formState, loading } = useFormContext();
 
   const placeSelectProps = useMemo(() => {
     const foundProps = Object.entries(formState).filter(([key]) => fieldNamesEnum.includes(key));
@@ -52,6 +52,7 @@ const PlaceSelect = () => {
             status={status[name]}
             required
             value={placeSelectProps[name]}
+            disabled={loading}
           />
         </FormItem>
       ))}

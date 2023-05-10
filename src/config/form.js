@@ -14,8 +14,14 @@ export const defaultFormValue = {
   floor: 0,
   room: 0,
   date: null,
-  time_start: null,
-  time_end: null,
+  time_start: {
+    hours: '',
+    minutes: '',
+  },
+  time_end: {
+    hours: '',
+    minutes: '',
+  },
   comment: '',
 };
 

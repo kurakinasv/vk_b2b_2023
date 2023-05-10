@@ -12,7 +12,7 @@ import s from './TimePicker.module.scss';
 const TimePicker = ({ suphead, id }) => {
   const timeFieldName = `time_${id}`;
 
-  const { setFormState, formState } = useFormContext();
+  const { setFormState, formState, loading } = useFormContext();
 
   const { status, setStatus, changeStatusByFieldValue } = useStatus(
     fieldNames,
@@ -47,6 +47,7 @@ const TimePicker = ({ suphead, id }) => {
             onClose={changeStatusByFieldValue(name)}
             value={formState[timeFieldName] ? formState[timeFieldName][name] : ''}
             required
+            disabled={loading}
           />
         </FormItem>
       ))}

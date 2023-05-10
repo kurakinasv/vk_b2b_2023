@@ -22,17 +22,18 @@ export const validate = (toValidate) => {
     }
   };
 
-  observeFields(toValidate);
-
   if (toValidate.time_start && toValidate.time_end) {
     const startMinutes = toValidate.time_start.hours * 60 + toValidate.time_start.minutes;
     const endMinutes = toValidate.time_end.hours * 60 + toValidate.time_end.minutes;
-    if (startMinutes > endMinutes) {
-      message = 'Время конца брони меньше времени начала';
+
+    if (startMinutes >= endMinutes) {
+      message = 'Время конца брони меньше или равно времени начала';
       isValid = false;
       console.error(message);
     }
   }
+
+  observeFields(toValidate);
 
   return { isValid, message };
 };

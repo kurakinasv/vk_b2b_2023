@@ -1,62 +1,46 @@
-import { useEffect, useState } from 'react';
-import {
-  Button,
-  ButtonGroup,
-  FormItem,
-  FormLayout,
-  FormLayoutGroup,
-  FormStatus,
-  Header,
-  Textarea,
-} from '@vkontakte/vkui';
+import { useState } from 'react';
+import { FormLayout, FormLayoutGroup, FormStatus, Header } from '@vkontakte/vkui';
 
 import { useFormContext } from '@app/context';
-import { modileBreakpoint } from '@config/ui';
-import { defaultFormValue, formStatusEnum } from '@config/form';
+import { formStatusEnum } from '@config/form';
 import { validate } from '@utils/validate';
 
-import DatePicker from '../DatePicker';
-import TimePicker from '../TimePicker';
-import PlaceSelect from '../PlaceSelect';
-import Subheading from '../Subheading';
+import FooterButtons from '@components/FooterButtons';
+import CommentSection from '@components/CommentSection';
+import DatePicker from '@components/DatePicker';
+import TimePicker from '@components/TimePicker';
+import PlaceSelect from '@components/PlaceSelect';
+import Subheading from '@components/Subheading';
 
 import s from './Form.module.scss';
 
 const Form = () => {
-  const { formState, setFormState, setValidationStatus, validationStatus } = useFormContext();
+  const { formState, setValidationStatus, validationStatus, setLoading } = useFormContext();
 
   const [errorMessage, setErrorMessage] = useState('');
+
+  const sendForm = (data) => {
+    console.log('Отправка данных формы...');
+    setLoading(true);
+
+    setTimeout(() => {
+      const jsonData = JSON.stringify(data);
+      console.log('Отправлено:\n', jsonData);
+
+      setLoading(false);
+    }, 1000);
+  };
 
   const submitHandler = () => {
     setValidationStatus(formStatusEnum.DEFAULT);
     const { isValid, message } = validate(formState);
-    setErrorMessage(message);
 
     if (isValid) {
-      console.log('Отправка данных формы...');
-
-      setTimeout(() => {
-        const data = JSON.stringify(formState);
-        console.log('Отправлено:\n', data);
-      }, 1000);
+      sendForm(formState);
     } else {
+      setErrorMessage(message);
       setValidationStatus(formStatusEnum.ERROR);
     }
-  };
-
-  const clearFormData = () => {
-    setFormState(defaultFormValue);
-    setValidationStatus(formStatusEnum.DEFAULT);
-  };
-
-  const [comment, setComment] = useState('');
-
-  const onTextAreaChange = (event) => {
-    setComment(event.target.value);
-  };
-
-  const onTextAreaBlur = () => {
-    setFormState((data) => ({ ...data, comment }));
   };
 
   return (
@@ -70,12 +54,7 @@ const Form = () => {
 
         <PlaceSelect />
 
-        <FormLayoutGroup mode="vertical">
-          <Subheading title="Дата" />
-          <FormItem className={s.datePickerContainer}>
-            <DatePicker />
-          </FormItem>
-        </FormLayoutGroup>
+        <DatePicker />
 
         <FormLayoutGroup mode="vertical">
           <Subheading title="Время" />
@@ -85,26 +64,9 @@ const Form = () => {
           </div>
         </FormLayoutGroup>
 
-        <FormLayoutGroup mode="vertical">
-          <Subheading title="Комментарий" />
-          <FormItem>
-            <Textarea value={comment} onChange={onTextAreaChange} onBlur={onTextAreaBlur} />
-          </FormItem>
-        </FormLayoutGroup>
+        <CommentSection />
 
-        <ButtonGroup
-          mode="horizontal"
-          gap={window.innerWidth > modileBreakpoint ? 'm' : 's'}
-          stretched
-          className={s.buttonGroup}
-        >
-          <Button size="l" appearance="neutral" stretched onClick={clearFormData}>
-            Очистить
-          </Button>
-          <Button size="l" appearance="accent" stretched onClick={submitHandler}>
-            Отправить
-          </Button>
-        </ButtonGroup>
+        <FooterButtons submitHandler={submitHandler} />
       </FormLayout>
     </div>
   );
