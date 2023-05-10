@@ -1,24 +1,40 @@
-import { useState } from 'react';
 import { DateInput, LocaleProvider } from '@vkontakte/vkui';
 
+import { useFormContext } from '@app/context';
 import { modileBreakpoint } from '@config/ui';
+import { datePickerFieldName, formStatusEnum } from '@config/form';
+import useStatus from '@hooks/useStatus';
+import { updateObjectProperty } from '@utils/updateObjectProperty';
 
 import s from './DatePicker.module.scss';
 
 const DatePicker = () => {
-  const [value, setValue] = useState(null);
+  const { setFormState, formState } = useFormContext();
+
+  const { status, setStatus, changeStatusByFieldValue } = useStatus([datePickerFieldName], {
+    [datePickerFieldName]: formState.date,
+  });
+
+  const changeHandler = (value) => {
+    setFormState(updateObjectProperty(datePickerFieldName, value));
+
+    const currentStatus = value ? formStatusEnum.DEFAULT : formStatusEnum.ERROR;
+    setStatus(updateObjectProperty(datePickerFieldName, currentStatus));
+  };
 
   return (
     <div className={s.datePickerContainer}>
       <LocaleProvider value="ru">
         <DateInput
           size={window.innerWidth > modileBreakpoint ? 'm' : 's'}
-          value={value}
-          onChange={setValue}
+          value={formState[datePickerFieldName]}
+          onChange={changeHandler}
           disablePast={true}
           disablePickers={true}
           showNeighboringMonth={true}
           className={s.datePicker}
+          status={status.date}
+          onBlur={changeStatusByFieldValue(datePickerFieldName)}
         />
       </LocaleProvider>
     </div>

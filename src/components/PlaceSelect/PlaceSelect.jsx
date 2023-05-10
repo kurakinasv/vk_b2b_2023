@@ -1,91 +1,60 @@
-import { useState } from 'react';
+import { useCallback, useMemo } from 'react';
 import { CustomSelect, FormItem, FormLayoutGroup } from '@vkontakte/vkui';
+
+import { useFormContext } from '@app/context';
+import { placeSelectData, fieldNamesEnum } from '@config/placeSelect';
+import { formStatusEnum } from '@config/form';
+import useStatus from '@hooks/useStatus';
+import { updateObjectProperty } from '@utils/updateObjectProperty';
 
 import Subheading from '../Subheading';
 
-const towers = [
-  {
-    label: 'А',
-    value: 'a',
-  },
-  {
-    label: 'Б',
-    value: 'b',
-  },
-];
-
 const PlaceSelect = () => {
-  const floors = Array(25)
-    .fill(null)
-    .map((_, i) => ({
-      label: String(i + 3),
-      value: i + 3,
-    }));
+  const { setFormState, formState } = useFormContext();
 
-  const rooms = Array(10)
-    .fill(null)
-    .map((_, i) => ({
-      label: `№ ${i + 1}`,
-      value: i + 1,
-    }));
+  const placeSelectProps = useMemo(() => {
+    const foundProps = Object.entries(formState).filter(([key]) => fieldNamesEnum.includes(key));
+    const foundPropsObj = foundProps.reduce((acc, [key, val]) => ({ ...acc, [key]: val }), {});
 
-  // { tower: '', floor: 0, room: 0 }
-  const [formData, setFormData] = useState({
-    tower: '',
-    floor: 0,
-    room: 0,
-  });
+    return foundPropsObj;
+  }, [formState]);
 
-  const handleChange = (event) => {
+  const { status, setStatus, changeStatusByFieldValue } = useStatus(
+    Object.values(fieldNamesEnum),
+    placeSelectProps
+  );
+
+  const changeHandler = useCallback((event) => {
     const name = event.target.name;
     const value = event.target.value;
 
-    console.log(name, value);
+    setFormState(updateObjectProperty(name, value));
 
-    setFormData((data) => ({ ...data, [name]: value }));
-  };
+    const currentStatus = value ? formStatusEnum.DEFAULT : formStatusEnum.ERROR;
+    setStatus(updateObjectProperty(name, currentStatus));
+  }, []);
 
   return (
     <FormLayoutGroup mode="vertical">
       <Subheading title="Место" />
 
-      <FormItem style={{ flexGrow: 1, flexShrink: 1 }} bottom={formData.tower ? 'Башня' : ''}>
-        <CustomSelect
-          placeholder="Башня"
-          options={towers}
-          selectType="default"
-          allowClearButton
-          onChange={handleChange}
-          name="tower"
-        />
-      </FormItem>
-
-      <FormItem style={{ flexGrow: 1, flexShrink: 1 }} bottom={formData.floor ? 'Этаж' : ''}>
-        <CustomSelect
-          placeholder="Этаж"
-          options={floors}
-          selectType="default"
-          allowClearButton
-          searchable
-          onChange={handleChange}
-          name="floor"
-        />
-      </FormItem>
-
-      <FormItem
-        style={{ flexGrow: 1, flexShrink: 1 }}
-        bottom={formData.room ? 'Переговорочная' : ''}
-      >
-        <CustomSelect
-          placeholder="Переговорочная"
-          options={rooms}
-          selectType="default"
-          allowClearButton
-          searchable
-          onChange={handleChange}
-          name="room"
-        />
-      </FormItem>
+      {placeSelectData.map(({ name, localeName, options, searchable }) => (
+        <FormItem key={name} bottom={placeSelectProps[name] ? localeName : ''}>
+          <CustomSelect
+            name={name}
+            placeholder={localeName}
+            options={options}
+            selectType="default"
+            allowClearButton
+            onChange={changeHandler}
+            searchable={searchable}
+            onClose={changeStatusByFieldValue(name)}
+            status={status[name]}
+            required
+            value={placeSelectProps[name]}
+          />
+        </FormItem>
+      ))}
     </FormLayoutGroup>
   );
 };

@@ -1,50 +1,62 @@
 import { CustomSelect, FormItem, FormLayoutGroup } from '@vkontakte/vkui';
 import PropTypes from 'prop-types';
 
-const TimePicker = ({ suphead }) => {
-  const minutes = Array(60)
-    .fill(null)
-    .map((_, i) => ({
-      value: i,
-      label: String(i),
-    }));
+import { useFormContext } from '@app/context';
+import { formStatusEnum } from '@config/form';
+import { fieldNames, timePickerSelectData } from '@config/timePicker';
+import useStatus from '@hooks/useStatus';
+import { updateObjectProperty } from '@utils/updateObjectProperty';
 
-  const hours = Array(17)
-    .fill(null)
-    .map((_, i) => ({
-      value: i + 7,
-      label: String(i + 7),
-    }));
+import s from './TimePicker.module.scss';
+
+const TimePicker = ({ suphead, id }) => {
+  const timeFieldName = `time_${id}`;
+
+  const { setFormState, formState } = useFormContext();
+
+  const { status, setStatus, changeStatusByFieldValue } = useStatus(
+    fieldNames,
+    formState[timeFieldName]
+  );
+
+  const changeHandler = (event) => {
+    const value = event.target.value;
+    const name = event.target.name;
+
+    setFormState(
+      updateObjectProperty(timeFieldName, { ...formState[timeFieldName], [name]: value })
+    );
+
+    const currentStatus = value ? formStatusEnum.DEFAULT : formStatusEnum.ERROR;
+    setStatus(updateObjectProperty(name, currentStatus));
+  };
 
   return (
-    <div style={{ flexGrow: 1 }}>
-      <FormLayoutGroup mode={'horizontal'} segmented>
-        <FormItem bottom={suphead}>
+    <FormLayoutGroup mode="horizontal" className={s.timePickerWrapper} segmented>
+      {timePickerSelectData.map(({ name, localeName, options }, i) => (
+        <FormItem key={name} bottom={i === 0 ? suphead : ''}>
           <CustomSelect
-            placeholder="Часы"
-            options={hours}
+            name={name}
+            placeholder={localeName}
+            options={options}
             selectType="default"
             allowClearButton
             searchable
+            onChange={changeHandler}
+            status={status[name]}
+            onClose={changeStatusByFieldValue(name)}
+            value={formState[timeFieldName] ? formState[timeFieldName][name] : ''}
+            required
           />
         </FormItem>
-
-        <FormItem>
-          <CustomSelect
-            placeholder="Минуты"
-            options={minutes}
-            selectType="default"
-            allowClearButton
-            searchable
-          />
-        </FormItem>
-      </FormLayoutGroup>
-    </div>
+      ))}
+    </FormLayoutGroup>
   );
 };
 
 TimePicker.propTypes = {
   suphead: PropTypes.string.isRequired,
+  id: PropTypes.string.isRequired,
 };
 
 export default TimePicker;
